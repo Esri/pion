@@ -15,6 +15,38 @@ namespace pion {    // begin namespace pion
 // static members of logger
 #if defined(PION_USE_OSTREAM_LOGGING)
 logger::log_priority_type    logger::m_priority = logger::LOG_LEVEL_INFO;
+#elif defined(PION_DISABLE_LOGGING)
+   
+  class NullLogSink : public LogSink
+  {
+    std::string _name;
+
+  public:
+    NullLogSink(const char* name) : _name(name)
+    {
+    }
+
+    ~NullLogSink()
+    {
+      // Nothing to do
+    }
+
+    void Log(int level, const char* message) {}
+    bool IsEnabled(int level) { return false; }
+  };
+
+  class NullLogFactory : public LogFactory
+  {
+  public:
+    LogSink* GetLogger(const char* name)
+    {
+      return new NullLogSink(name);
+    }
+  };
+
+
+  LogFactory* logger::_factory = new NullLogFactory();
+
 #endif
 
     
