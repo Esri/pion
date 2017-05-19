@@ -10,7 +10,7 @@
 #ifndef __PION_PIONCONFIG_HEADER__
 #define __PION_PIONCONFIG_HEADER__
 
-#cmakedefine PION_HAVE_SSL    ${PION_HAVE_SSL} 
+#cmakedefine PION_HAVE_SSL    ${PION_HAVE_SSL}
 #cmakedefine PION_HAVE_JSON   ${PION_HAVE_JSON}
 #cmakedefine PION_HAVE_PYTHON ${PION_HAVE_PYTHON}
 
@@ -41,7 +41,7 @@
 // -----------------------------------------------------------------------
 // Logging Options
 //
-// At most one of the logging options below should be defined.  If none of 
+// At most one of the logging options below should be defined.  If none of
 // them are defined, std::cout and std::cerr will be used for logging.
 
 /* To use the `log4cplus' library for logging, include PION_USE_LOG4CPLUS or PION_FULL
@@ -56,7 +56,7 @@
    in Preprocessor Definitions, or uncomment the following line. */
 #cmakedefine PION_USE_LOG4CPP ${PION_USE_LOG4CPP}
 
-/* To disable logging, include PION_DISABLE_LOGGING in Preprocessor Definitions, 
+/* To disable logging, include PION_DISABLE_LOGGING in Preprocessor Definitions,
    or uncomment the following line. */
 #cmakedefine PION_DISABLE_LOGGING ${PION_DISABLE_LOGGING}
 
@@ -77,6 +77,7 @@
 
 #include <boost/config.hpp>
 
+#define PION_STATIC_LINKING
 #ifdef _MSC_VER
     #ifdef PION_EXPORTS
         #define PION_API __declspec(dllexport)
@@ -87,7 +88,7 @@
     #endif
 
     #ifdef PION_STATIC_LINKING
-        #define PION_PLUGIN 
+        #define PION_PLUGIN
     #else
         #define PION_PLUGIN __declspec(dllexport)
     #endif
