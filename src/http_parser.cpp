@@ -949,11 +949,12 @@ bool parser::parse_url_encoded(ihash_multimap& dict,
                 }
                 query_value.erase();
                 parse_state = QUERY_PARSE_NAME;
-            } else if (*ptr == ',') {
-                // end of value found in multi-value list (OK if empty)
-                if (! query_name.empty())
-                    dict.insert( std::make_pair(algorithm::url_decode(query_name), algorithm::url_decode(query_value)) );
-                query_value.erase();
+// Euan - This code is breaking multi part upload posting of attachments
+//            } else if (*ptr == ',') {
+//                // end of value found in multi-value list (OK if empty)
+//                if (! query_name.empty())
+//                    dict.insert( std::make_pair(algorithm::url_decode(query_name), algorithm::url_decode(query_value)) );
+//                query_value.erase();
             } else if (*ptr == '\r' || *ptr == '\n' || *ptr == '\t') {
                 // ignore linefeeds, carriage return and tabs (normally within POST content)
             } else if (is_control(*ptr) || query_value.size() >= QUERY_VALUE_MAX) {
@@ -984,11 +985,15 @@ bool parser::parse_multipart_form_data(ihash_multimap& dict,
     if (ptr == NULL || len == 0)
         return true;
     
+    // EUAN - Code breaks multi part bouldaries that are quoted
+    std::string unquoted_local_content;
+    std::remove_copy(content_type.begin(), content_type.end(), std::back_inserter(unquoted_local_content), '"');
+
     // parse field boundary
-    std::size_t pos = content_type.find("boundary=");
+    std::size_t pos = unquoted_local_content.find("boundary=");
     if (pos == std::string::npos)
         return false;
-    const std::string boundary = std::string("--") + content_type.substr(pos+9);
+    const std::string boundary = std::string("--") + unquoted_local_content.substr(pos + 9);
     
     // used to track what we are parsing
     enum MultiPartParseState {
