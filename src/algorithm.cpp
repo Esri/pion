@@ -158,10 +158,12 @@ std::string algorithm::url_decode(const std::string& str)
     
     for (std::string::size_type pos = 0; pos < str.size(); ++pos) {
         switch(str[pos]) {
-        case '+':
-            // convert to space character
-            result += ' ';
-            break;
+        // EUAN - Commented out because this is breaking the base64 encoded qury parameters
+        // LocalServer Issue #214
+        //case '+':
+        //    // convert to space character
+        //    result += ' ';
+        //    break;
         case '%':
             // decode hexadecimal value
             if (pos + 2 < str.size()) {
