@@ -49,7 +49,7 @@ protected:
      * @param tcp_conn TCP connection used to send the message
      * @param handler function called after the request has been sent
      */
-    writer(tcp::connection_ptr& tcp_conn, finished_handler_t handler)
+    writer(const tcp::connection_ptr& tcp_conn, finished_handler_t handler)
         : m_logger(PION_GET_LOGGER("pion.http.writer")),
         m_tcp_conn(tcp_conn), m_content_length(0), m_stream_is_empty(true), 
         m_client_supports_chunks(true), m_sending_chunks(false),
@@ -234,7 +234,7 @@ public:
     
     
     /// returns a shared pointer to the TCP connection
-    inline tcp::connection_ptr& get_connection(void) { return m_tcp_conn; }
+    inline const tcp::connection_ptr& get_connection(void) { return m_tcp_conn; }
 
     /// returns the length of the payload content (in bytes)
     inline size_t get_content_length(void) const { return m_content_length; }

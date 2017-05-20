@@ -37,7 +37,7 @@ public:
     void receive(void);
     
     /// returns a shared pointer to the TCP connection
-    inline tcp::connection_ptr& get_connection(void) { return m_tcp_conn; }
+    inline const tcp::connection_ptr& get_connection(void) { return m_tcp_conn; }
     
     /// sets the maximum number of seconds for read operations
     inline void set_timeout(boost::uint32_t seconds) { m_read_timeout = seconds; }
@@ -52,7 +52,7 @@ protected:
      *                   if false, the message is parsed as an HTTP response
      * @param tcp_conn TCP connection containing a new message to parse
      */
-    reader(const bool is_request, tcp::connection_ptr& tcp_conn)
+    reader(const bool is_request, const tcp::connection_ptr& tcp_conn)
         : http::parser(is_request), m_tcp_conn(tcp_conn),
         m_read_timeout(DEFAULT_READ_TIMEOUT)
         {}  

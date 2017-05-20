@@ -193,11 +193,58 @@
     #define PION_LOG_FATAL(LOG, MSG)    if (LOG->getPriority()>=log4cpp::Priority::FATAL) { LOG->fatalStream() << MSG; }
 
 #elif defined(PION_DISABLE_LOGGING)
-
-    // Logging is disabled -> add do-nothing stubs for logging
+  
+#include <boost/shared_ptr.hpp>
     namespace pion {
-        struct PION_API logger {
-            logger(int /* glog */) {}
+
+#define LOG_LEVEL_DEBUG 0
+#define LOG_LEVEL_TRACE 1
+#define LOG_LEVEL_INFO 2
+#define LOG_LEVEL_WARN 3
+#define LOG_LEVEL_ERROR 4
+#define LOG_LEVEL_FATAL 4
+
+  // Sink for log events.
+  class LogSink
+  {
+  public:
+    virtual void Log(int level, const char* message) = 0;
+    virtual bool IsEnabled(int level) = 0;
+  };
+
+  // Factory for LogSinks
+  class LogFactory
+  {
+  public:
+    virtual LogSink* GetLogger(const char* name) = 0;
+  }; 
+
+  struct PION_API logger 
+  {
+  private:
+    static LogFactory* _factory;
+    boost::shared_ptr<LogSink> _logger;
+
+  public:
+    // Set the LogFactory
+    static void SetFactory(LogFactory* factory)
+    {
+      _factory = factory;
+    }
+
+
+    // In constructor, get the LogSink for this logger, by name
+    logger(int) :
+      _logger(boost::shared_ptr<LogSink>(_factory->GetLogger("pion")))
+    { }
+
+    logger(const std::string& name) :
+      _logger(boost::shared_ptr<LogSink>(_factory->GetLogger(name.c_str())))
+    { }
+
+    bool IsEnabled(int level) { return _logger->IsEnabled(level); }
+    void Log(int level, const char* message) { _logger->Log(level, message); }
+
             operator bool() const { return false; }
             static void shutdown() {}
         };
@@ -205,10 +252,11 @@
         typedef log_appender *   log_appender_ptr;
     }
 
+
     #undef PION_HAS_LOG_APPENDER
     #define PION_LOG_CONFIG_BASIC   {}
     #define PION_LOG_CONFIG(FILE)   {}
-    #define PION_GET_LOGGER(NAME)   0
+#define PION_GET_LOGGER(NAME)	pion::logger(NAME)
     #define PION_SHUTDOWN_LOGGER    0
 
     // use LOG to avoid warnings about LOG not being used
@@ -220,11 +268,13 @@
     #define PION_LOG_SETLEVEL_UP(LOG)       { if (LOG) {} }
     #define PION_LOG_SETLEVEL_DOWN(LOG)     { if (LOG) {} }
 
-    #define PION_LOG_DEBUG(LOG, MSG)    { if (LOG) {} }
-    #define PION_LOG_INFO(LOG, MSG)     { if (LOG) {} }
-    #define PION_LOG_WARN(LOG, MSG)     { if (LOG) {} }
-    #define PION_LOG_ERROR(LOG, MSG)    { if (LOG) {} }
-    #define PION_LOG_FATAL(LOG, MSG)    { if (LOG) {} }
+
+#define PION_LOG_DEBUG(LOG, MSG)	if (LOG.IsEnabled(LOG_LEVEL_DEBUG)) { std::stringstream ss; ss << MSG; LOG.Log(LOG_LEVEL_DEBUG, ss.str().c_str()); }
+#define PION_LOG_INFO(LOG, MSG)		if (LOG.IsEnabled(LOG_LEVEL_INFO))  { std::stringstream ss; ss << MSG; LOG.Log(LOG_LEVEL_INFO, ss.str().c_str()); }
+#define PION_LOG_WARN(LOG, MSG)		if (LOG.IsEnabled(LOG_LEVEL_WARN))  { std::stringstream ss; ss << MSG; LOG.Log(LOG_LEVEL_WARN, ss.str().c_str()); }
+#define PION_LOG_ERROR(LOG, MSG)	if (LOG.IsEnabled(LOG_LEVEL_ERROR)) { std::stringstream ss; ss << MSG; LOG.Log(LOG_LEVEL_ERROR, ss.str().c_str()); }
+#define PION_LOG_FATAL(LOG, MSG)	if (LOG.IsEnabled(LOG_LEVEL_FATAL)) { std::stringstream ss; ss << MSG; LOG.Log(LOG_LEVEL_FATAL, ss.str().c_str()); }
+
 #else
 
     #define PION_USE_OSTREAM_LOGGING

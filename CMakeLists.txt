@@ -45,21 +45,21 @@ message(">>> Building Pion version: ${PION_VERSION}")
 #----------------------------------------------------------
 
 # general
-option(BUILD_SHARED_LIBS "Build Pion as shared library" ON)
+option(BUILD_SHARED_LIBS "Build Pion as shared library" OFF)
 option(BUILD_SPDY "Enable SPDY" OFF)
 option(BUILD_UT "Enable Unit test" OFF)
 
 # utils
-option(BUILD_PIOND "Enable piond" ON)
-option(BUILD_HELLOSERVER "Enable helloserver" ON)
+option(BUILD_PIOND "Enable piond" OFF)
+option(BUILD_HELLOSERVER "Enable helloserver" OFF)
 
 # services
-option(BUILD_ALLOWNOTHINGSERVICE "Enable AllowNothingService" ON)
-option(BUILD_COOKIESERVICE "Enable CookieService" ON)
-option(BUILD_ECHOSERVICE "Enable EchoService" ON)
-option(BUILD_FILESERVICE "Enable FileService" ON)
-option(BUILD_HELLOSERVICE "Enable HelloService" ON)
-option(BUILD_LOGSERVICE "Enable LogService" ON)
+option(BUILD_ALLOWNOTHINGSERVICE "Enable AllowNothingService" OFF)
+option(BUILD_COOKIESERVICE "Enable CookieService" OFF)
+option(BUILD_ECHOSERVICE "Enable EchoService" OFF)
+option(BUILD_FILESERVICE "Enable FileService" OFF)
+option(BUILD_HELLOSERVICE "Enable HelloService" OFF)
+option(BUILD_LOGSERVICE "Enable LogService" OFF)
 
 # logging
 option(USE_LOG4CPLUS "Use log4cplus" OFF)
@@ -89,7 +89,7 @@ set(Boost_USE_MULTITHREADED ON)
 #set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
-find_package(Boost COMPONENTS thread system filesystem regex unit_test_framework REQUIRED)
+find_package(Boost REQUIRED)
 if (Boost_FOUND)
     # disable autolinking feature
     add_definitions(-DBOOST_ALL_NO_LIB)

@@ -45,3 +45,5 @@ test-suite.log
 pion-*.tar.gz
 pion-*.tar.bz2
 pion-*.zip
+build/build32
+build/build64
